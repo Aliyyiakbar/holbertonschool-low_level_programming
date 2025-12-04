@@ -24,7 +24,7 @@ int main(void)
 				{
 					l = 0;
 				}
-				for ( l <= 9; ++l)
+				for (; l <= 9; ++l)
 				{
 					putchar(i + '0');
 					putchar(j + '0');
