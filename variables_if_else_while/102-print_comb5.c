@@ -17,7 +17,15 @@ int main(void)
 			int k, l;
 			for (k = 0; k <= 9; ++k)
 			{
-				for (l = j + 1; l <= 9; ++l)
+				if (k == 0)
+				{
+					l = j + 1;
+				}
+				else
+				{
+					l = 0;
+				}
+				for (; l <= 9; ++l)
 				{
 					putchar(i + '0');
 					putchar(j + '0');
