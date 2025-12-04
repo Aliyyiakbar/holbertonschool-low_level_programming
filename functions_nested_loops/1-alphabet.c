@@ -1,15 +1,16 @@
-#include <stdio.h>
 #include "main.h"
 
 /**
- * main - Prints the solution for the task.
+ * print_alphabet - Prints the solution for the task.
  *
- * Return: Always 0 (Success)
  **/
 
-int main(void)
+void print_alphabet(void)
 {
-	print_alphabet();
-
-	return (0);
+	char c;
+	for (c = 'a'; c <= 'z'; ++c)
+	{
+		_putchar(c);
+	}
+	_putchar('\n');
 }
