@@ -16,15 +16,7 @@ int main(void)
 		{
 			for (k = i; k <= 9; ++k)
 			{
-				if (k == i)
-				{
-					l = i + 1;
-				}
-				else
-				{
-					l = 0;
-				}
-				for (; l <= 9; ++l)
+				for (l = (k == i ? j + 1 : 0); l <= 9; ++l)
 				{
 					putchar(i + '0');
 					putchar(j + '0');
