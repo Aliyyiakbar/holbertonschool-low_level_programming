@@ -3,12 +3,10 @@
 #include <time.h>
 
 /**
-*
-*	main - print the last digit of the number stored in the variable n
-*
-*	return - always 0 (success)
-*
-**/
+ * main - prints the last digit of variable n.
+ *
+ * Return: Always 0 (Success)
+ **/
 
 int main(void)
 {
