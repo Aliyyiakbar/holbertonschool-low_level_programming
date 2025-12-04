@@ -8,15 +8,26 @@
 
 int main(void)
 {
-	int i, j, k, l;
+	int i, j;
 
 	for (i = 0; i <= 9; ++i)
 	{
 		for (j = 0; j <= 9; ++j)
 		{
-			for (k = i + 1; k <= 9; ++k)
+			int k, l;
+			if (i == 0)
 			{
-				for (l = j + 1; l <= 9; ++l)
+				k = 0;
+				l = 1;
+			}
+			else
+			{
+				k = i + 1;
+				l = j + 1;
+			}
+			for (k = 0; k <= 9; ++k)
+			{
+				for (l = 1; l <= 9; ++l)
 				{
 					putchar(i + '0');
 					putchar(j + '0');
