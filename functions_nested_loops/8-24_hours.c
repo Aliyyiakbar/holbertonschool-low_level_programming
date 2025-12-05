@@ -5,7 +5,7 @@
  *
  **/
 
-void jack_bauer()
+void jack_bauer(void)
 {
 	char i, j, k, l;
 
