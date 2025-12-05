@@ -7,7 +7,7 @@
  *
  * Return: solution of the problem
  */
- 
+
 int add(int a, int b)
 {
 	return (a + b);
