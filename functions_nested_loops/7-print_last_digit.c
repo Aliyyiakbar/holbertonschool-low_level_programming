@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include "main.h"
 
 /**
@@ -7,7 +6,6 @@
  *
  * Return: solution of the problem
  */
-
 
 int print_last_digit(int n)
 {
