@@ -6,7 +6,7 @@
  */
 
 void rev_string(char *s)
-{	
+{
 	int i, j;
 
 	i = 0;
@@ -15,11 +15,11 @@ void rev_string(char *s)
 	{
 		++i;
 	}
-	
+
 	j = 0;
 	--i;
 
-	while(i > j)
+	while (i > j)
 	{
 		char tmp;
 
