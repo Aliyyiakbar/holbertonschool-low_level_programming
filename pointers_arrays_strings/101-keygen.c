@@ -12,11 +12,11 @@
 
 int main(void)
 {
-	srand(time(0));
-
 	char s[] = "abcdefghijklmabcdefghijklm0.";
 	int i, j;
 	char tmp;
+	
+	srand(time(0));
 
 	i = rand() % 29;
 	j = rand() % 29;
