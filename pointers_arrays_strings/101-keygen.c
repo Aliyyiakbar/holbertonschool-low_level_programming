@@ -12,15 +12,7 @@
 
 int main(void)
 {
-	int sum;
-	
-	sum = 2772;
-	while(sum > 'z')
-	{
-		printf("z");
-		sum -= 'z';
-	}
-	printf("%c\n", sum);
+	printf("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZH\n");
 
 	return (0);
 }
