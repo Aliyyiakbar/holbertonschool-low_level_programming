@@ -10,8 +10,6 @@ void print_array(int *a, int n)
 {
 	int i;
 
-	n = sizeof(a) / sizeof(a[0]);
-
 	for (i = 0; i < n; ++i)
 	{
 		printf("%d", a[i]);
@@ -19,9 +17,6 @@ void print_array(int *a, int n)
 		{
 			printf(", ");
 		}
-		else
-		{
-			printf("\n");
-		}
 	}
+	printf("\n");
 }
