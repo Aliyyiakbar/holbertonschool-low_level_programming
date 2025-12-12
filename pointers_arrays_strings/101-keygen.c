@@ -15,7 +15,7 @@ int main(void)
 
 	int i;
 
-	printf("%lld\n", rand());
+	printf("%d\n", rand());
 
 	return (0);
 }
