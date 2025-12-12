@@ -12,7 +12,7 @@
 
 int main(void)
 {
-	printf("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZH\n");
+	printf("aaaaaaaaaaaaaaaaaaaaaaaaaaaa8\n");
 
 	return (0);
 }
