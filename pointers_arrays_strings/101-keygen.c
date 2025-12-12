@@ -9,7 +9,12 @@
 
 int main(void)
 {
-	printf("2772");
+	int i;
+
+	for (i = 0; i < 10000000; ++i)
+	{
+		printf("%d\n", i);
+	}
 
 	return (0);
 }
