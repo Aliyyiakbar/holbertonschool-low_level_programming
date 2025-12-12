@@ -20,9 +20,6 @@ int main(void)
 
 	i = rand() % 29;
 	j = rand() % 29;
-
-	char tmp;
-
 	tmp = s[i];
 	*(s + i) = s[j];
 	*(s + j) = tmp;
