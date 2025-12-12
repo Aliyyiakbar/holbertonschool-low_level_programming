@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 /**
  * main - prints the solution for the program 101-keygen.
@@ -9,12 +11,11 @@
 
 int main(void)
 {
+	srand(time(0));
+
 	int i;
 
-	for (i = 0; i < 10000000; ++i)
-	{
-		printf("%d\n", i);
-	}
+	printf("%lld\n", rand());
 
 	return (0);
 }
