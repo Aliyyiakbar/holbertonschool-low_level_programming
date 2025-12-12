@@ -10,9 +10,7 @@ void print_array(int *a, int n)
 {
 	int i;
 
-	n = *(&a + 1) - a;
-
-	printf("%d\n", n);
+	n = sizeof(a) / sizeof(a[0]);
 
 	for (i = 0; i < n; ++i)
 	{
