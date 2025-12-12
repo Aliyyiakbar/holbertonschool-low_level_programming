@@ -12,7 +12,22 @@
 
 int main(void)
 {
-	printf("aaaaaaaaaaaaaaaaaaaaaaaaaaaa8\n");
+	srand(time(0));
+
+	char s[] = "abcdefghijklmabcdefghijklm0.";
+
+	int i, j;
+
+	i = rand() % 29;
+	j = rand() % 29;
+
+	char tmp;
+
+	tmp = s[i];
+	*(s + i) = s[j];
+	*(s + j) = tmp;
+
+	printf("%s\n", s);
 
 	return (0);
 }
