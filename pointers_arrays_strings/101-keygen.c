@@ -13,8 +13,6 @@ int main(void)
 {
 	srand(time(0));
 
-	int i;
-
 	printf("%d\n", rand());
 
 	return (0);
