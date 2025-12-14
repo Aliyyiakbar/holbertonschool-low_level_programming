@@ -1,6 +1,23 @@
 #include "main.h"
 
 /**
+ * f - returns the length of a string
+ * @s: string
+ * Return: length
+ */
+int f(char *s)
+{
+	int i = 0;
+
+	while (s[i] != '\0')
+	{
+		++i;
+	}
+
+	return (i);
+}
+
+/**
  * infinite_add - adds two numbers stored as strings
  * @n1: first number string
  * @n2: second number string
@@ -18,19 +35,9 @@ char *infinite_add(char *n1, char *n2, char *r, int size_r)
 		return (0);
 	}
 
-	i = 0;
-	while (n1[i] != '\0')
-	{
-		++i;
-	}
-	j = 0;
-	while (n2[j] != '\0')
-	{
-		j++;
-	}
+	i = f(n1) - 1;
+	j = f(n2) - 1;
 
-	i--;
-	j--;
 	k = size_r - 1;
 	r[k] = '\0';
 	k--;
