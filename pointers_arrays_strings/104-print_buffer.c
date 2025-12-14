@@ -20,24 +20,22 @@ void print_buffer(char *b, int size)
 	{
 		printf("%08x: ", i);
 
-		for (j = 0; j < 10; j += 2)
+		for (j = 0; j < 10; j++)
 		{
 			if (i + j < size)
 			{
-				printf("%02x%02x", (unsigned char)b[i + j], (i + j + 1 < size) ? (unsigned char)b[i + j + 1] : 0);
+				printf("%02x", (unsigned char)b[i + j]);
 			}
 			else
 			{
-				printf("    ");
+				printf("  ");
 			}
 
-			if (j != 8)
+			if (j % 2 == 1)
 			{
 				printf(" ");
 			}
 		}
-
-		printf(" ");
 
 		for (j = 0; j < 10 && i + j < size; j++)
 		{
