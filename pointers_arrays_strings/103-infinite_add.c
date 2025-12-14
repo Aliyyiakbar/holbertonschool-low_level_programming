@@ -1,24 +1,6 @@
 #include "main.h"
 
 /**
- * _strlen - returns the length of a string
- * @s: string
- *
- * Return: length
- */
-static int _strlen(char *s)
-{
-	int len = 0;
-
-	while (s[len] != '\0')
-	{
-		++len;
-	}
-
-	return (len);
-}
-
-/**
  * infinite_add - adds two numbers stored as strings
  * @n1: first number string
  * @n2: second number string
