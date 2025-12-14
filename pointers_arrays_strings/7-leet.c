@@ -9,16 +9,20 @@
 char *leet(char *str)
 {
 	int i, j;
-	char letters[] = "aAeEoOtTlL", codes[] = "4433007711";
+	char letters[] = "aAeEoOtTlL", nums[] = "4433007711";
+
+	i =  0;
 
 	while (str[i] != '\0')
 	{
-		for (j = 0; j < 10; j++)
+		j = 0;
+		while (letters[j] != '\0')
 		{
 			if (str[i] == letters[j])
 			{
-				str[i] = codes[j];
+				str[i] = nums[j];
 			}
+			++j;
 		}
 		++i;
 	}
