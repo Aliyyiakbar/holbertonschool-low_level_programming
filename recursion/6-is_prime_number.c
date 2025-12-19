@@ -26,7 +26,7 @@ int checker(int n, int base)
 }
 
 /**
- * int is_prime_number(int n) - return the natural square root of a number n.
+ * int is_prime_number - return the natural square root of a number n.
  * @n: number to check for square roots.
  * Return: the natural square root of number n
  */
