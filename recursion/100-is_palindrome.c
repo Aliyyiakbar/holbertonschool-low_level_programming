@@ -20,6 +20,7 @@ int len(char *s)
 
 /**
  * checker - checks the input number from n to the base
+ * @s: pointer to the string
  * @n: number is squared and compared against base
  * @base: base number to check
  * Return: natural square root of number base
