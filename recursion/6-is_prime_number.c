@@ -9,25 +9,24 @@
 
 int checker(int n, int base)
 {
-	if (n * n == base)
+	if (n >= base)
 	{
-		return (n);
+		return (1);
 	}
-	if (n * n > base)
+	if (base % n == 0)
 	{
-		return (-1);
+		return (0);
 	}
-
 	return (checker(n + 1, base));
 }
 
 /**
- * _sqrt_recursion - return the natural square root of a number n.
+ * int is_prime_number(int n) - return the natural square root of a number n.
  * @n: number to check for square roots.
  * Return: the natural square root of number n
  */
 
-int _sqrt_recursion(int n)
+int is_prime_number(int n)
 {
-	return (checker(1, n));
+	return (checker(2, n));
 }
