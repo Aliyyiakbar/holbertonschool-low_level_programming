@@ -2,7 +2,6 @@
 
 /**
  * _pow_recursion - calculates the power of a number
- *
  * @x: input number
  * @y: input number
  * Return: factorial of the number
