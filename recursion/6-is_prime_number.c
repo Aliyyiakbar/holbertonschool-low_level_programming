@@ -9,6 +9,10 @@
 
 int checker(int n, int base)
 {
+	if (base <= 1)
+	{
+		return (0);
+	}
 	if (n >= base)
 	{
 		return (1);
