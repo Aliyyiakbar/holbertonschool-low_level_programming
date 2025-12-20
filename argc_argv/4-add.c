@@ -40,8 +40,9 @@ int _atoi(char *s)
 
 int main(int argc, char *argv[])
 {
-	int sum = 0;
-	int i, num;
+	int i, num, sum;
+
+	sum = 0;
 
 	if (argc < 2)
 	{
@@ -51,12 +52,27 @@ int main(int argc, char *argv[])
 
 	for (i = 1; i < argc; i++)
 	{
-		num = _atoi(argv[i]);
-		if (num < 0)
+		int j;
+
+		j = 0;
+
+		if (argv[i][j] == '+')
 		{
-			printf("Error\n");
-			return (1);
+			j++;
 		}
+
+		while (argv[i][j] != '\0')
+		{
+			if (argv[i][j] < '0' || argv[i][j] > '9')
+			{
+				printf("Error\n");
+				return (1);
+			}
+
+			j++;
+		}
+
+		num = _atoi(argv[i]);
 		sum += num;
 	}
 
