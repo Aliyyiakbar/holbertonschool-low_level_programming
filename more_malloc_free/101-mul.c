@@ -1,29 +1,22 @@
 #include "main.h"
 #include <stdlib.h>
 
-int *g_res;
-
 /**
- * error_exit - Prints Error and exits with status 98
+ * print_error - Prints Error
  *
- * Return: Nothing (exits 98)
+ * Return: 98
  */
-void error_exit(void)
+int print_error(void)
 {
 	int i;
 	char msg[] = "Error\n";
-
-	if (g_res != NULL)
-	{
-		free(g_res);
-		g_res = NULL;
-	}
 
 	for (i = 0; msg[i] != '\0'; i++)
 	{
 		_putchar(msg[i]);
 	}
-	exit(98);
+
+	return (98);
 }
 
 /**
@@ -111,11 +104,11 @@ int main(int argc, char *argv[])
 	int la, lb, len, i, j;
 	int *res;
 
-	g_res = NULL;
+	res = NULL;
 
 	if (argc != 3)
 	{
-		error_exit();
+		return (print_error());
 	}
 
 	a = argv[1];
@@ -123,7 +116,7 @@ int main(int argc, char *argv[])
 
 	if (is_digits(a) == 0 || is_digits(b) == 0)
 	{
-		error_exit();
+		return (print_error());
 	}
 
 	la = _strlen(a);
@@ -133,10 +126,8 @@ int main(int argc, char *argv[])
 	res = malloc(sizeof(int) * len);
 	if (res == NULL)
 	{
-		error_exit();
+		return (print_error());
 	}
-
-	g_res = res;
 
 	for (i = 0; i < len; i++)
 	{
@@ -162,7 +153,6 @@ int main(int argc, char *argv[])
 
 	print_number(res, len);
 	free(res);
-	g_res = NULL;
 
 	return (0);
 }
