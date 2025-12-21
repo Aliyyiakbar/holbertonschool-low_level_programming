@@ -1,6 +1,8 @@
 #include "main.h"
 #include <stdlib.h>
 
+int *g_res;
+
 /**
  * error_exit - Prints Error and exits with status 98
  *
@@ -10,6 +12,12 @@ void error_exit(void)
 {
 	int i;
 	char msg[] = "Error\n";
+
+	if (g_res != NULL)
+	{
+		free(g_res);
+		g_res = NULL;
+	}
 
 	for (i = 0; msg[i] != '\0'; i++)
 	{
@@ -103,6 +111,8 @@ int main(int argc, char *argv[])
 	int la, lb, len, i, j;
 	int *res;
 
+	g_res = NULL;
+
 	if (argc != 3)
 	{
 		error_exit();
@@ -125,6 +135,8 @@ int main(int argc, char *argv[])
 	{
 		error_exit();
 	}
+
+	g_res = res;
 
 	for (i = 0; i < len; i++)
 	{
@@ -150,6 +162,7 @@ int main(int argc, char *argv[])
 
 	print_number(res, len);
 	free(res);
+	g_res = NULL;
 
 	return (0);
 }
