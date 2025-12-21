@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 /**
- * print_error - Prints Error
+ * print_error - Prints Error and a new line
  *
  * Return: 98
  */
