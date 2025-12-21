@@ -6,11 +6,11 @@
  * Return: the integer value
  */
 
-int _atoi(char *s)
+unsigned long int _atoi(char *s)
 {
 	int i = 0;
 	int sign = 1;
-	int result = 0;
+	unsigned long int result = 0;
 
 	if (s[i] == '-')
 	{
@@ -32,7 +32,7 @@ int _atoi(char *s)
 }
 
 /**
- * main - multiplies two numbers passed as arguments.
+ * main - multiplies two BIG numbers passed as arguments.
  * @argc: argument count
  * @argv: argument vector
  * Return: Always 0 (Success)
@@ -40,19 +40,19 @@ int _atoi(char *s)
 
 int main(int argc, char *argv[])
 {
-	int num1, num2, product;
+	unsigned long int num1, num2, product;
 
 	if (argc != 3)
 	{
 		printf("Error\n");
-		return (1);
+		return (98);
 	}
 
-	num1 = _atoi(argv[1]);
-	num2 = _atoi(argv[2]);
+	num1 = (unsigned long int)_atoi(argv[1]);
+	num2 = (unsigned long int)_atoi(argv[2]);
 	product = num1 * num2;
-
-	printf("%d\n", product);
-
+	
+	printf("%lu\n", product);
+	
 	return (0);
 }
