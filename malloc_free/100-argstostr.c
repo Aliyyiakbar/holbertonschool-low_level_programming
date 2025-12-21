@@ -19,43 +19,32 @@ char *argstostr(int ac, char **av)
 	{
 		return (NULL);
 	}
-
 	total = 0;
-
 	for (i = 0; i < ac; i++)
 	{
 		j = 0;
-
 		while (av[i][j] != '\0')
 		{
 			total++;
 			j++;
 		}
-
 		total++;
 	}
-
 	str = (char *)malloc((total + 1) * sizeof(char));
-
 	if (str == NULL)
 	{
 		return (NULL);
 	}
-
 	k = 0;
-
 	for (i = 0; i < ac; i++)
 	{
 		j = 0;
-
 		while (av[i][j] != '\0')
 		{
 			str[k++] = av[i][j++];
 		}
-
 		str[k++] = '\n';
 	}
-
 	str[k] = '\0';
 
 	return (str);
