@@ -1,158 +1,87 @@
 #include "main.h"
+#include <stdio.h>
 #include <stdlib.h>
 
 /**
- * print_error - Prints Error and a new line
- *
- * Return: 98
+ * _puts - prints a string followed by a new newline
+ * @str: str to print
  */
-int print_error(void)
+
+void _puts(char *str)
 {
-	int i;
-	char msg[] = "Error\n";
+	int a = 0;
 
-	for (i = 0; msg[i] != '\0'; i++)
+	while (str[a])
 	{
-		_putchar(msg[i]);
+		_putchar(str[a]);
+		a++;
 	}
-
-	return (98);
 }
 
 /**
- * is_digits - Checks if a string contains only digits
- * @s: String to check
- *
- * Return: 1 if all characters are digits, 0 otherwise
+ * _atoi - converts a string to an int
+ * @s: pointer to string
+ * Return: converted int
  */
-int is_digits(char *s)
+
+int _atoi(const char *s)
 {
-	int i;
+	int sign = 1;
+	unsigned long int resp = 0, first, a;
 
-	if (s == NULL || s[0] == '\0')
+	for (first = 0; !(s[first] >= 48 && s[first] <= 57); first++)
+		if (s[first] == '-')
+			sign *= -1;
+
+	for (a = first; s[a] >= 48 && s[a] <= 57; a++)
 	{
-		return (0);
+		resp *= 10;
+		resp += (s[a] - 48);
 	}
 
-	for (i = 0; s[i] != '\0'; i++)
-	{
-		if (s[i] < '0' || s[i] > '9')
-		{
-			return (0);
-		}
-	}
-
-	return (1);
+	return (sign * resp);
 }
 
 /**
- * _strlen - Returns the length of a string
- * @s: String
- *
- * Return: Length of the string
+ * print_int - prints an integer
+ * @n: int
+ * Return: void
  */
-int _strlen(char *s)
+
+void print_int(unsigned long int n)
 {
-	int n;
+	unsigned long int divisor = 1;
+	unsigned long int a, resp;
 
-	n = 0;
+	for (a = 0; n / divisor > 9; a++, divisor *= 10)
+		;
 
-	while (s[n] != '\0')
+	for (; divisor >= 1; n %= divisor, divisor /= 10)
 	{
-		++n;
+		resp = n / divisor;
+		_putchar('0' + resp);
 	}
-
-	return (n);
 }
 
 /**
- * print_number - Prints a big number stored in an int array
- * @res: Array of digits
- * @len: Length of the array
- *
- * Return: Nothing
+ * main - returns the product of two positive numbers
+ * @argc: number of arguments
+ * @argv: arguments
+ * Return: 0
  */
-void print_number(int *res, int len)
+
+int main(int argc, char const *argv[])
 {
-	int i;
+	(void)argc;
 
-	i = 0;
-
-	while (i < len - 1 && res[i] == 0)
+	if (argc != 3 || !_atoi(argv[1]) || !_atoi(argv[2]))
 	{
-		++i;
+		_puts("Error\n");
+		exit(98);
 	}
 
-	for (; i < len; i++)
-	{
-		_putchar(res[i] + '0');
-	}
-
+	print_int(_atoi(argv[1]) * _atoi(argv[2]));
 	_putchar('\n');
-}
-
-/**
- * main - Multiplies two positive numbers
- * @argc: Argument count
- * @argv: Argument vector
- *
- * Return: 0 on success, 98 on error
- */
-int main(int argc, char *argv[])
-{
-	char *a, *b;
-	int la, lb, len, i, j;
-	int *res;
-
-	res = NULL;
-
-	if (argc != 3)
-	{
-		return (print_error());
-	}
-
-	a = argv[1];
-	b = argv[2];
-
-	if (is_digits(a) == 0 || is_digits(b) == 0)
-	{
-		return (print_error());
-	}
-
-	la = _strlen(a);
-	lb = _strlen(b);
-	len = la + lb;
-
-	res = malloc(sizeof(int) * len);
-	if (res == NULL)
-	{
-		return (print_error());
-	}
-
-	for (i = 0; i < len; i++)
-	{
-		res[i] = 0;
-	}
-
-	for (i = la - 1; i >= 0; i--)
-	{
-		int carry = 0;
-		int da = a[i] - '0';
-
-		for (j = lb - 1; j >= 0; j--)
-		{
-			int db = b[j] - '0';
-			int idx = i + j + 1;
-			int sum = res[idx] + (da * db) + carry;
-
-			res[idx] = sum % 10;
-			carry = sum / 10;
-		}
-		res[i] += carry;
-	}
-
-	print_number(res, len);
-	free(res);
 
 	return (0);
 }
