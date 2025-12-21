@@ -47,14 +47,18 @@ void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size)
 		return (NULL);
 	}
 
-	void *new_ptr = _malloc_checked(new_size);
+	void *new_ptr;
+	
+	new_ptr= _malloc_checked(new_size);
 
 	if (new_ptr == NULL)
 	{
 		return (NULL);
 	}
 
-	unsigned int copy_size = old_size < new_size ? old_size : new_size;
+	unsigned int copy_size;
+	
+	copy_size= old_size < new_size ? old_size : new_size;
 
 	for (unsigned int i = 0; i < copy_size; i++)
 	{
