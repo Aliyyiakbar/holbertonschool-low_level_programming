@@ -4,7 +4,7 @@
 /**
  * print_error - prints Error and exits with 98
  */
-void print_error(void)
+static void print_error(void)
 {
 	_putchar('E');
 	_putchar('r');
@@ -17,35 +17,35 @@ void print_error(void)
 
 /**
  * _isdigit - checks if character is digit
- * @c: the character to check
+ * @c: character to check
  *
  * Return: 1 if digit, 0 otherwise
  */
-int _isdigit(int c)
+static int _isdigit(int c)
 {
 	return (c >= '0' && c <= '9');
 }
 
 /**
  * _strlen - returns the length of a string
- * @s: the string whose length to check
+ * @s: string
  *
- * Return: integer length of string
+ * Return: length
  */
-int _strlen(char *s)
+static int _strlen(char *s)
 {
 	int i = 0;
 
-	while (*s++)
+	while (s[i])
 		i++;
 	return (i);
 }
 
 /**
- * validate_number - checks if a string is a valid positive number
- * @s: string to validate
+ * validate_number - validates that string contains only digits
+ * @s: string
  */
-void validate_number(char *s)
+static void validate_number(char *s)
 {
 	int i = 0;
 
@@ -60,14 +60,14 @@ void validate_number(char *s)
 }
 
 /**
- * big_multiply - multiply two big number strings
- * @s1: the first big number string
- * @s2: the second big number string
- * @len: output length of result array
+ * big_multiply - multiplies two digit strings into digit array
+ * @s1: number string 1
+ * @s2: number string 2
+ * @len: output length (l1 + l2)
  *
- * Return: pointer to digits array (each cell 0..9)
+ * Return: pointer to digit array (each cell 0..9)
  */
-char *big_multiply(char *s1, char *s2, int *len)
+static char *big_multiply(char *s1, char *s2, int *len)
 {
 	char *r;
 	int l1, l2, i, j, a, b, carry;
@@ -102,11 +102,11 @@ char *big_multiply(char *s1, char *s2, int *len)
 }
 
 /**
- * main - multiply two positive numbers
- * @argc: the number of arguments
- * @argv: the argument vector
+ * main - multiplies two positive numbers
+ * @argc: arg count
+ * @argv: arg vector
  *
- * Return: Always 0 on success.
+ * Return: 0 on success
  */
 int main(int argc, char **argv)
 {
