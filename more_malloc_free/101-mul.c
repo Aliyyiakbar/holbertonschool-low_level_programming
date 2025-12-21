@@ -1,58 +1,155 @@
-#include <stdio.h>
+#include "main.h"
+#include <stdlib.h>
 
 /**
- * _atoi - converts a string to an integer
- * @s: string to convert
- * Return: the integer value
+ * error_exit - Prints Error and exits with status 98
+ *
+ * Return: Nothing (exits 98)
  */
-
-unsigned long int _atoi(char *s)
+void error_exit(void)
 {
-	int i = 0;
-	int sign = 1;
-	unsigned long int result = 0;
+	int i;
+	char msg[] = "Error\n";
 
-	if (s[i] == '-')
+	for (i = 0; msg[i] != '\0'; i++)
 	{
-		sign = -1;
-		i++;
+		_putchar(msg[i]);
 	}
-	else if (s[i] == '+')
-	{
-		i++;
-	}
-
-	while (s[i] >= '0' && s[i] <= '9')
-	{
-		result = result * 10 + (s[i] - '0');
-		i++;
-	}
-
-	return (sign * result);
+	exit(98);
 }
 
 /**
- * main - multiplies two BIG numbers passed as arguments.
- * @argc: argument count
- * @argv: argument vector
- * Return: Always 0 (Success)
+ * is_digits - Checks if a string contains only digits
+ * @s: String to check
+ *
+ * Return: 1 if all characters are digits, 0 otherwise
  */
+int is_digits(char *s)
+{
+	int i;
 
+	if (s == NULL || s[0] == '\0')
+	{
+		return (0);
+	}
+
+	for (i = 0; s[i] != '\0'; i++)
+	{
+		if (s[i] < '0' || s[i] > '9')
+		{
+			return (0);
+		}
+	}
+
+	return (1);
+}
+
+/**
+ * _strlen - Returns the length of a string
+ * @s: String
+ *
+ * Return: Length of the string
+ */
+int _strlen(char *s)
+{
+	int n;
+
+	n = 0;
+
+	while (s[n] != '\0')
+	{
+		++n;
+	}
+
+	return (n);
+}
+
+/**
+ * print_number - Prints a big number stored in an int array
+ * @res: Array of digits
+ * @len: Length of the array
+ *
+ * Return: Nothing
+ */
+void print_number(int *res, int len)
+{
+	int i;
+
+	i = 0;
+
+	while (i < len - 1 && res[i] == 0)
+	{
+		++i;
+	}
+
+	for (; i < len; i++)
+	{
+		_putchar(res[i] + '0');
+	}
+
+	_putchar('\n');
+}
+
+/**
+ * main - Multiplies two positive numbers
+ * @argc: Argument count
+ * @argv: Argument vector
+ *
+ * Return: 0 on success, 98 on error
+ */
 int main(int argc, char *argv[])
 {
-	unsigned long int num1, num2, product;
+	char *a, *b;
+	int la, lb, len, i, j;
+	int *res;
 
 	if (argc != 3)
 	{
-		printf("Error\n");
-		return (98);
+		error_exit();
 	}
 
-	num1 = (unsigned long int)_atoi(argv[1]);
-	num2 = (unsigned long int)_atoi(argv[2]);
-	product = num1 * num2;
-	
-	printf("%lu\n", product);
-	
+	a = argv[1];
+	b = argv[2];
+
+	if (is_digits(a) == 0 || is_digits(b) == 0)
+	{
+		error_exit();
+	}
+
+	la = _strlen(a);
+	lb = _strlen(b);
+	len = la + lb;
+
+	res = malloc(sizeof(int) * len);
+	if (res == NULL)
+	{
+		error_exit();
+	}
+
+	for (i = 0; i < len; i++)
+	{
+		res[i] = 0;
+	}
+
+	for (i = la - 1; i >= 0; i--)
+	{
+		int carry = 0;
+		int da = a[i] - '0';
+
+		for (j = lb - 1; j >= 0; j--)
+		{
+			int db = b[j] - '0';
+			int idx = i + j + 1;
+			int sum = res[idx] + (da * db) + carry;
+
+			res[idx] = sum % 10;
+			carry = sum / 10;
+		}
+		res[i] += carry;
+	}
+
+	print_number(res, len);
+	free(res);
+
 	return (0);
 }
