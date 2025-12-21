@@ -2,6 +2,25 @@
 #include <stdlib.h>
 
 /**
+ * _malloc_checked - allocates memory and checks for success
+ * @b: number of bytes to allocate
+ *
+ * Return: pointer to allocated memory
+ *         exits with status 98 if allocation fails
+ */
+
+void *_malloc_checked(unsigned int b)
+{
+	void *ptr = malloc(b);
+
+	if (ptr == NULL)
+	{
+		exit(98);
+	}
+	return (ptr);
+}
+
+/**
  * string_nconcat - concatenates two strings, taking at most n bytes from s2
  * @s1: first input string
  * @s2: second input string
@@ -30,7 +49,7 @@ char *string_nconcat(char *s1, char *s2, unsigned int n)
 		n = len2;
 	}
 
-	new_str = malloc_checked(len1 + n + 1);
+	new_str = _malloc_checked(len1 + n + 1);
 
 	if (!new_str)
 	{
