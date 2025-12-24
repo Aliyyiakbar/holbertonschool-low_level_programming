@@ -1,5 +1,6 @@
 #include "main.h"
 #include <stdlib.h>
+#include <string.h>
 
 /**
  * print_error - prints Error and exits with 98
@@ -70,18 +71,20 @@ static void validate_number(char *s)
 static char *big_multiply(char *s1, char *s2, int *len)
 {
 	char *r;
-	int l1, l2, i, j, a, b, carry;
+	int l1, l2, i, j;
+	int a, b;
+	int carry, sum;
 
 	l1 = _strlen(s1);
 	l2 = _strlen(s2);
 	*len = l1 + l2;
 
-	r = malloc(sizeof(char) * (*len));
+	r = malloc((*len) * sizeof(char));
 	if (!r)
 		print_error();
 
-	for (i = 0; i < *len; i++)
-		r[i] = 0;
+	/* zero-initialize the digits */
+	memset(r, 0, (*len) * sizeof(char));
 
 	for (i = l1 - 1; i >= 0; i--)
 	{
@@ -91,11 +94,13 @@ static char *big_multiply(char *s1, char *s2, int *len)
 		for (j = l2 - 1; j >= 0; j--)
 		{
 			b = s2[j] - '0';
-			carry += r[i + j + 1] + (a * b);
-			r[i + j + 1] = carry % 10;
-			carry /= 10;
+			/* correct accumulation: sum = a*b + existing + carry */
+			sum = a * b + r[i + j + 1] + carry;
+			r[i + j + 1] = sum % 10;
+			carry = sum / 10;
 		}
-		r[i + j + 1] += carry;
+		/* after inner loop, add remaining carry to the left position */
+		r[i + j + 1] += carry; /* j is -1 here, so i+j+1 == i */
 	}
 
 	return (r);
