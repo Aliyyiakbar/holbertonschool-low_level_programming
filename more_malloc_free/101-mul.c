@@ -1,143 +1,163 @@
 #include "main.h"
 #include <stdlib.h>
-#include <string.h>
 
 /**
- * print_error - prints Error and exits with 98
- */
-static void print_error(void)
-{
-	_putchar('E');
-	_putchar('r');
-	_putchar('r');
-	_putchar('o');
-	_putchar('r');
-	_putchar('\n');
-	exit(98);
-}
-
-/**
- * _isdigit - checks if character is digit
- * @c: character to check
+ * is_digit_str - checks if a string contains only digits
+ * @s: input string
  *
- * Return: 1 if digit, 0 otherwise
+ * Return: 1 if all chars are digits, 0 otherwise
  */
-static int _isdigit(int c)
-{
-	return (c >= '0' && c <= '9');
-}
-
-/**
- * _strlen - returns the length of a string
- * @s: string
- *
- * Return: length
- */
-static int _strlen(char *s)
+int is_digit_str(char *s)
 {
 	int i = 0;
 
+	if (s == NULL || *s == '\0')
+		return (0);
 	while (s[i])
+	{
+		if (s[i] < '0' || s[i] > '9')
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+/**
+ * str_len - returns the length of a string
+ * @s: input string
+ *
+ * Return: length as int
+ */
+int str_len(char *s)
+{
+	int i = 0;
+
+	while (s && s[i])
 		i++;
 	return (i);
 }
 
 /**
- * validate_number - validates that string contains only digits
- * @s: string
+ * mul_str - multiplies two positive number-strings and returns result string
+ * @s1: first number
+ * @s2: second number
+ *
+ * Return: pointer to newly-allocated string containing the product
+ *         (caller must free). On allocation failure, prints "Error\n" and
+ *         exits with 98.
  */
-static void validate_number(char *s)
+char *mul_str(char *s1, char *s2)
+{
+	int len1 = str_len(s1);
+	int len2 = str_len(s2);
+	int len = len1 + len2;
+	int i, j;
+	int *res = NULL;
+	char *out = NULL;
+	int start = 0;
+
+	res = malloc(sizeof(int) * len);
+	if (!res)
+	{
+		/* allocation error */
+		char err[] = "Error\n";
+		for (i = 0; err[i]; i++)
+			_putchar(err[i]);
+		exit(98);
+	}
+
+	for (i = 0; i < len; i++)
+		res[i] = 0;
+
+	for (i = len1 - 1; i >= 0; i--)
+	{
+		int n1 = s1[i] - '0';
+		for (j = len2 - 1; j >= 0; j--)
+		{
+			int n2 = s2[j] - '0';
+			int sum = res[i + j + 1] + (n1 * n2);
+			res[i + j + 1] = sum % 10;
+			res[i + j] += sum / 10;
+		}
+	}
+
+	/* skip leading zeros */
+	while (start < (len - 1) && res[start] == 0)
+		start++;
+
+	out = malloc(sizeof(char) * (len - start + 1));
+	if (!out)
+	{
+		free(res);
+		char err[] = "Error\n";
+		for (i = 0; err[i]; i++)
+			_putchar(err[i]);
+		exit(98);
+	}
+
+	for (i = start; i < len; i++)
+		out[i - start] = res[i] + '0';
+	out[len - start] = '\0';
+
+	free(res);
+	return (out);
+}
+
+/**
+ * print_number - prints a null-terminated string using _putchar
+ * @s: string to print
+ */
+void print_number(char *s)
 {
 	int i = 0;
 
-	if (!s || s[0] == '\0')
-		print_error();
-
-	for (; s[i]; i++)
+	while (s[i])
 	{
-		if (!_isdigit(s[i]))
-			print_error();
+		_putchar(s[i]);
+		i++;
 	}
+	_putchar('\n');
 }
 
 /**
- * big_multiply - multiplies two digit strings into digit array
- * @s1: number string 1
- * @s2: number string 2
- * @len: output length (l1 + l2)
+ * main - entry point; validates args and prints product of two positive numbers
+ * @argc: argument count
+ * @argv: argument vector
  *
- * Return: pointer to digit array (each cell 0..9)
- */
-static char *big_multiply(char *s1, char *s2, int *len)
-{
-	char *r;
-	int l1, l2, i, j;
-	int a, b;
-	int carry, sum;
-
-	l1 = _strlen(s1);
-	l2 = _strlen(s2);
-	*len = l1 + l2;
-
-	r = malloc((*len) * sizeof(char));
-	if (!r)
-		print_error();
-
-	/* zero-initialize the digits */
-	memset(r, 0, (*len) * sizeof(char));
-
-	for (i = l1 - 1; i >= 0; i--)
-	{
-		a = s1[i] - '0';
-		carry = 0;
-
-		for (j = l2 - 1; j >= 0; j--)
-		{
-			b = s2[j] - '0';
-			/* correct accumulation: sum = a*b + existing + carry */
-			sum = a * b + r[i + j + 1] + carry;
-			r[i + j + 1] = sum % 10;
-			carry = sum / 10;
-		}
-		/* after inner loop, add remaining carry to the left position */
-		r[i + j + 1] += carry; /* j is -1 here, so i+j+1 == i */
-	}
-
-	return (r);
-}
-
-/**
- * main - multiplies two positive numbers
- * @argc: arg count
- * @argv: arg vector
- *
- * Return: 0 on success
+ * Return: 0 on success, (exits with 98 on error as required)
  */
 int main(int argc, char **argv)
 {
-	char *r;
-	int len, i, started = 0;
+	char *prod;
 
 	if (argc != 3)
-		print_error();
-
-	validate_number(argv[1]);
-	validate_number(argv[2]);
-
-	r = big_multiply(argv[1], argv[2], &len);
-
-	for (i = 0; i < len; i++)
 	{
-		if (r[i] != 0)
-			started = 1;
-		if (started)
-			_putchar(r[i] + '0');
+		char err[] = "Error\n";
+		int i;
+
+		for (i = 0; err[i]; i++)
+			_putchar(err[i]);
+		exit(98);
 	}
 
-	if (!started)
-		_putchar('0');
+	if (!is_digit_str(argv[1]) || !is_digit_str(argv[2]))
+	{
+		char err[] = "Error\n";
+		int i;
 
-	_putchar('\n');
-	free(r);
+		for (i = 0; err[i]; i++)
+			_putchar(err[i]);
+		exit(98);
+	}
+
+	prod = mul_str(argv[1], argv[2]);
+	if (!prod)
+	{
+		/* mul_str handles allocation failures and exits, but keep check */
+		exit(98);
+	}
+
+	print_number(prod);
+	free(prod);
 	return (0);
 }
