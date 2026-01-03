@@ -132,28 +132,31 @@ int main(int argc, char **argv)
 
 	if (argc != 3)
 	{
-		char err[] = "Error\n";
-		int i;
+		_putchar('E');
+		_putchar('r');
+		_putchar('r');
+		_putchar('o');
+		_putchar('r');
+		_putchar('\n');
 
-		for (i = 0; err[i]; i++)
-			_putchar(err[i]);
 		exit(98);
 	}
 
 	if (!is_digit_str(argv[1]) || !is_digit_str(argv[2]))
 	{
-		char err[] = "Error\n";
-		int i;
+		_putchar('E');
+		_putchar('r');
+		_putchar('r');
+		_putchar('o');
+		_putchar('r');
+		_putchar('\n');
 
-		for (i = 0; err[i]; i++)
-			_putchar(err[i]);
 		exit(98);
 	}
 
 	prod = mul_str(argv[1], argv[2]);
 	if (!prod)
 	{
-		/* mul_str handles allocation failures and exits, but keep check */
 		exit(98);
 	}
 
