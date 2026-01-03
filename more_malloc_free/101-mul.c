@@ -59,10 +59,13 @@ char *mul_str(char *s1, char *s2)
 	res = malloc(sizeof(int) * len);
 	if (!res)
 	{
-		/* allocation error */
-		char err[] = "Error\n";
-		for (i = 0; err[i]; i++)
-			_putchar(err[i]);
+		_putchar('E');
+		_putchar('r');
+		_putchar('r');
+		_putchar('o');
+		_putchar('r');
+		_putchar('\n');
+
 		exit(98);
 	}
 
@@ -89,9 +92,14 @@ char *mul_str(char *s1, char *s2)
 	if (!out)
 	{
 		free(res);
-		char err[] = "Error\n";
-		for (i = 0; err[i]; i++)
-			_putchar(err[i]);
+
+		_putchar('E');
+		_putchar('r');
+		_putchar('r');
+		_putchar('o');
+		_putchar('r');
+		_putchar('\n');
+
 		exit(98);
 	}
 
