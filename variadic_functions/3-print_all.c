@@ -1,56 +1,51 @@
 #include "variadic_functions.h"
 
 /**
- * p_char - prints a char argument
- * @ap: pointer to the variadic argument list
- * @sep: separator to print before the value
+ * print_item - prints one argument depending on format char
+ * @c: format specifier character
+ * @ap: pointer to variadic list
+ * @sep: address of separator string to print before next item
  */
-void p_char(va_list *ap, char *sep)
-{
-	printf("%s%c", sep, (char)va_arg(*ap, int));
-}
 
-/**
- * p_int - prints an int argument
- * @ap: pointer to the variadic argument list
- * @sep: separator to print before the value
- */
-void p_int(va_list *ap, char *sep)
+void print_item(char c, va_list *ap, char **sep)
 {
-	printf("%s%d", sep, va_arg(*ap, int));
-}
+	char *s;
 
-/**
- * p_float - prints a float argument
- * @ap: pointer to the variadic argument list
- * @sep: separator to print before the value
- */
-void p_float(va_list *ap, char *sep)
-{
-	printf("%s%f", sep, va_arg(*ap, double));
-}
-
-/**
- * p_string - prints a string argument (prints (nil) if NULL)
- * @ap: pointer to the variadic argument list
- * @sep: separator to print before the value
- */
-void p_string(va_list *ap, char *sep)
-{
-	char *s = va_arg(*ap, char *);
-
-	if (s == NULL)
+	switch (c)
 	{
-		s = "(nil)";
-	}
+	case 'c':
+		printf("%s%c", *sep, (char)va_arg(*ap, int));
+		*sep = ", ";
+		break;
+	case 'i':
+		printf("%s%d", *sep, va_arg(*ap, int));
+		*sep = ", ";
+		break;
+	case 'f':
+		printf("%s%f", *sep, va_arg(*ap, double));
+		*sep = ", ";
+		break;
+	case 's':
+		s = va_arg(*ap, char *);
 
-	printf("%s%s", sep, s);
+		if (s == NULL)
+		{
+			s = "(nil)";
+		}
+
+		printf("%s%s", *sep, s);
+		*sep = ", ";
+		break;
+	default:
+		break;
+	}
 }
 
 /**
  * print_all - prints anything, followed by a new line
  * @format: list of argument types passed to the function
  */
+
 void print_all(const char * const format, ...)
 {
 	va_list ap;
@@ -68,27 +63,7 @@ void print_all(const char * const format, ...)
 
 	while (format[i] != '\0')
 	{
-		switch (format[i])
-		{
-		case 'c':
-			p_char(&ap, sep);
-			sep = ", ";
-			break;
-		case 'i':
-			p_int(&ap, sep);
-			sep = ", ";
-			break;
-		case 'f':
-			p_float(&ap, sep);
-			sep = ", ";
-			break;
-		case 's':
-			p_string(&ap, sep);
-			sep = ", ";
-			break;
-		default:
-			break;
-		}
+		print_item(format[i], &ap, &sep);
 		i++;
 	}
 
