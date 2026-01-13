@@ -13,10 +13,10 @@ int _strlen(const char *s)
 
 	while (s[len] != '\0')
 	{
-		len++;
+		++len;
 	}
 
-	return len;
+	return (len);
 }
 
 
@@ -34,14 +34,14 @@ list_t *add_node(list_t **head, const char *str)
 
 	if (head == NULL || str == NULL)
 	{
-		return NULL;
+		return (NULL);
 	}
 
 	tmp = malloc(sizeof(*tmp));
 
 	if (tmp == NULL)
 	{
-		return NULL;
+		return (NULL);
 	}
 
 	tmp->str = strdup(str);
@@ -49,12 +49,12 @@ list_t *add_node(list_t **head, const char *str)
 	if (tmp->str == NULL)
 	{
 		free(tmp);
-		return NULL;
+		return (NULL);
 	}
 
 	tmp->len = _strlen(str);
 	tmp->next = (*head);
 	(*head) = tmp;
 
-	return tmp;
+	return (tmp);
 }
