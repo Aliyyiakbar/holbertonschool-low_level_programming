@@ -55,7 +55,7 @@ list_t *add_node_end(list_t **head, const char *str)
 	if (*head == NULL)
 	{
 		*head = tmp;
-		return tmp;
+		return (tmp);
 	}
 
 	ptr = *head;
