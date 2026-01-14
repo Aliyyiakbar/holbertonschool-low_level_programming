@@ -29,7 +29,7 @@ int _strlen(const char *s)
 
 list_t *add_node_end(list_t **head, const char *str)
 {
-	list_t *ptr = malloc(sizeof(*ptr));
+	list_t *ptr = *head;
 	list_t *tmp = malloc(sizeof(*tmp));
 
 	if ((*head) == NULL || str == NULL || ptr == NULL || tmp == NULL)
