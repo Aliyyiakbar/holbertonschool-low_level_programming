@@ -60,36 +60,28 @@ int main(int argc, char *argv[])
 		dprintf(STDERR_FILENO, "Usage: cp file_from file_to\n");
 		exit(97);
 	}
-
 	from = open(argv[1], O_RDONLY);
-
 	if (from == -1)
 	{
 		error(98, argv[1], -1, -1, "Error: Can't read from file %s\n");
 	}
-
 	to = open(argv[2], O_WRONLY | O_CREAT | O_TRUNC, 0664);
-
 	if (to == -1)
 	{
 		error(99, argv[2], from, -1, "Error: Can't write to %s\n");
 	}
-
 	while ((r = read(from, buf, 1 << 10)))
 	{
 		w = write(to, buf, r);
-
 		if (w != r)
 		{
 			error(99, argv[2], from, to, "Error: Can't write to %s\n");
 		}
 	}
-
 	if (r == -1)
 	{
 		error(98, argv[1], from, to, "Error: Can't read from file %s\n");
 	}
-
 	close_fd(from);
 	close_fd(to);
 
