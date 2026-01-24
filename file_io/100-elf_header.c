@@ -1,20 +1,22 @@
 #include "main.h"
 #include <elf.h>
 
-/**
- * close_fd - closes a file descriptor and exits on failure
- * @fd: file descriptor to close
- *
- * Return: void
- */
-void close_fd(int fd)
-{
-	if (close(fd) == -1)
-	{
-		dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", fd);
-		exit(98);
-	}
-}
+#define SWAP16(x) \
+	((((x) & 0x00FF) << 8) | (((x) & 0xFF00) >> 8))
+
+#define SWAP32(x) \
+	((((x) & 0x000000FFUL) << 24) | (((x) & 0x0000FF00UL) << 8) | \
+	(((x) & 0x00FF0000UL) >> 8) | (((x) & 0xFF000000UL) >> 24))
+
+#define SWAP64(x) \
+	((((x) & 0x00000000000000FFUL) << 56) | \
+	(((x) & 0x000000000000FF00UL) << 40) | \
+	(((x) & 0x0000000000FF0000UL) << 24) | \
+	(((x) & 0x00000000FF000000UL) << 8) | \
+	(((x) & 0x000000FF00000000UL) >> 8) | \
+	(((x) & 0x0000FF0000000000UL) >> 24) | \
+	(((x) & 0x00FF000000000000UL) >> 40) | \
+	(((x) & 0xFF00000000000000UL) >> 56))
 
 /**
  * error - prints an error message and exits with status 98
@@ -35,26 +37,49 @@ void error(int fd, const char *file, const char *msg)
 		dprintf(STDERR_FILENO, "%s", msg);
 	}
 
-	if (fd != -1)
+	if (fd != -1 && close(fd) == -1)
 	{
-		close_fd(fd);
+		dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", fd);
 	}
 
 	exit(98);
 }
 
 /**
- * print_lines - prints ELF header lines (already parsed/normalized)
+ * print_magic - prints Magic line
  * @e: e_ident
- * @type: normalized type (host-endian)
- * @entry: normalized entry (host-endian)
  *
  * Return: void
  */
-void print_lines(const unsigned char *e, unsigned int type, unsigned long entry)
+void print_magic(const unsigned char *e)
 {
 	int i;
-	const char *osabi, *typestr;
+
+	printf("ELF Header:\n");
+	printf("  Magic:   ");
+	for (i = 0; i < EI_NIDENT; i++)
+	{
+		if (i == EI_NIDENT - 1)
+		{
+			printf("%02x\n", e[i]);
+		}
+		else
+		{
+			printf("%02x ", e[i]);
+		}
+	}
+}
+
+/**
+ * print_ident - prints Class, Data, Version, OS/ABI, ABI Version
+ * @e: e_ident
+ *
+ * Return: void
+ */
+void print_ident(const unsigned char *e)
+{
+	int i;
+	const char *osabi;
 
 	struct map_s
 	{
@@ -77,29 +102,6 @@ void print_lines(const unsigned char *e, unsigned int type, unsigned long entry)
 		{ELFOSABI_ARM, "ARM"},
 		{ELFOSABI_STANDALONE, "Standalone App"}
 	};
-
-	const struct map_s t_map[] = {
-		{ET_NONE, "NONE (None)"},
-		{ET_REL, "REL (Relocatable file)"},
-		{ET_EXEC, "EXEC (Executable file)"},
-		{ET_DYN, "DYN (Shared object file)"},
-		{ET_CORE, "CORE (Core file)"}
-	};
-
-	printf("ELF Header:\n");
-
-	printf("  Magic:   ");
-	for (i = 0; i < EI_NIDENT; i++)
-	{
-		if (i == EI_NIDENT - 1)
-		{
-			printf("%02x\n", e[i]);
-		}
-		else
-		{
-			printf("%02x ", e[i]);
-		}
-	}
 
 	printf("  Class:                             ");
 	if (e[EI_CLASS] == ELFCLASS32)
@@ -147,6 +149,7 @@ void print_lines(const unsigned char *e, unsigned int type, unsigned long entry)
 			osabi = os_map[i].s;
 		}
 	}
+
 	printf("  OS/ABI:                            ");
 	if (osabi != NULL)
 	{
@@ -158,6 +161,57 @@ void print_lines(const unsigned char *e, unsigned int type, unsigned long entry)
 	}
 
 	printf("  ABI Version:                       %d\n", e[EI_ABIVERSION]);
+}
+
+/**
+ * print_type_entry - prints Type and Entry point address
+ * @e: full header buffer
+ *
+ * Return: void
+ */
+void print_type_entry(const unsigned char *e)
+{
+	int i, is_64, is_be;
+	unsigned int type;
+	unsigned long entry;
+	const char *typestr;
+	const Elf32_Ehdr *h32;
+	const Elf64_Ehdr *h64;
+
+	struct map_s
+	{
+		unsigned int v;
+		const char *s;
+	};
+
+	const struct map_s t_map[] = {
+		{ET_NONE, "NONE (None)"},
+		{ET_REL, "REL (Relocatable file)"},
+		{ET_EXEC, "EXEC (Executable file)"},
+		{ET_DYN, "DYN (Shared object file)"},
+		{ET_CORE, "CORE (Core file)"}
+	};
+
+	is_64 = (e[EI_CLASS] == ELFCLASS64);
+	is_be = (e[EI_DATA] == ELFDATA2MSB);
+	h32 = (const Elf32_Ehdr *)e;
+	h64 = (const Elf64_Ehdr *)e;
+
+	type = is_64 ? (unsigned int)h64->e_type : (unsigned int)h32->e_type;
+	entry = is_64 ? (unsigned long)h64->e_entry : (unsigned long)h32->e_entry;
+
+	if (is_be)
+	{
+		type = SWAP16(type);
+		if (is_64)
+		{
+			entry = SWAP64(entry);
+		}
+		else
+		{
+			entry = SWAP32(entry);
+		}
+	}
 
 	typestr = NULL;
 	for (i = 0; i < (int)(sizeof(t_map) / sizeof(t_map[0])); i++)
@@ -167,6 +221,7 @@ void print_lines(const unsigned char *e, unsigned int type, unsigned long entry)
 			typestr = t_map[i].s;
 		}
 	}
+
 	printf("  Type:                              ");
 	if (typestr != NULL)
 	{
@@ -178,56 +233,6 @@ void print_lines(const unsigned char *e, unsigned int type, unsigned long entry)
 	}
 
 	printf("  Entry point address:               0x%lx\n", entry);
-}
-
-/**
- * print_elf - parses header fields, normalizes endianness, prints
- * @e: buffer containing ELF header
- *
- * Return: void
- */
-void print_elf(const unsigned char *e)
-{
-	int is_64, is_be;
-	unsigned int type;
-	unsigned long entry;
-	const Elf32_Ehdr *h32;
-	const Elf64_Ehdr *h64;
-
-	is_64 = (e[EI_CLASS] == ELFCLASS64);
-	is_be = (e[EI_DATA] == ELFDATA2MSB);
-
-	h32 = (const Elf32_Ehdr *)e;
-	h64 = (const Elf64_Ehdr *)e;
-
-	type = is_64 ? (unsigned int)h64->e_type : (unsigned int)h32->e_type;
-	entry = is_64 ? (unsigned long)h64->e_entry : (unsigned long)h32->e_entry;
-
-	if (is_be)
-	{
-		type = ((type & 0x00FF) << 8) | ((type & 0xFF00) >> 8);
-
-		if (is_64)
-		{
-			entry = ((entry & 0x00000000000000FFUL) << 56) |
-				((entry & 0x000000000000FF00UL) << 40) |
-				((entry & 0x0000000000FF0000UL) << 24) |
-				((entry & 0x00000000FF000000UL) << 8) |
-				((entry & 0x000000FF00000000UL) >> 8) |
-				((entry & 0x0000FF0000000000UL) >> 24) |
-				((entry & 0x00FF000000000000UL) >> 40) |
-				((entry & 0xFF00000000000000UL) >> 56);
-		}
-		else
-		{
-			entry = ((entry & 0x000000FFUL) << 24) |
-				((entry & 0x0000FF00UL) << 8) |
-				((entry & 0x00FF0000UL) >> 8) |
-				((entry & 0xFF000000UL) >> 24);
-		}
-	}
-
-	print_lines(e, type, entry);
 }
 
 /**
@@ -267,17 +272,15 @@ int main(int argc, char *argv[])
 		error(fd, argv[1], "Error: %s is not an ELF file\n");
 	}
 
-	if (e[EI_CLASS] == ELFCLASS32 && r < (ssize_t)sizeof(Elf32_Ehdr))
-	{
-		error(fd, argv[1], "Error: File %s is too short\n");
-	}
-	if (e[EI_CLASS] == ELFCLASS64 && r < (ssize_t)sizeof(Elf64_Ehdr))
-	{
-		error(fd, argv[1], "Error: File %s is too short\n");
-	}
+	print_magic(e);
+	print_ident(e);
+	print_type_entry(e);
 
-	print_elf(e);
-	close_fd(fd);
+	if (close(fd) == -1)
+	{
+		dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", fd);
+		exit(98);
+	}
 
 	return (0);
 }
