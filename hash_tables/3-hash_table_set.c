@@ -45,26 +45,22 @@ int hash_table_set(hash_table_t *ht, const char *key, const char *value)
 	{
 		return (0);
 	}
-
 	buf = strdup(value);
 	if (buf == NULL)
 	{
 		return (0);
 	}
-
 	idx = key_index((const unsigned char *)key, ht->size);
 	if (update_value(ht->array[idx], key, buf) == 1)
 	{
 		return (1);
 	}
-
 	nw = malloc(sizeof(hash_node_t));
 	if (nw == NULL)
 	{
 		free(buf);
 		return (0);
 	}
-
 	nw->key = strdup(key);
 	if (nw->key == NULL)
 	{
@@ -72,7 +68,6 @@ int hash_table_set(hash_table_t *ht, const char *key, const char *value)
 		free(nw);
 		return (0);
 	}
-
 	nw->value = buf;
 	nw->next = ht->array[idx];
 	ht->array[idx] = nw;
