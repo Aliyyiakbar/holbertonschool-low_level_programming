@@ -81,65 +81,39 @@ void print_magic(const unsigned char *e)
  */
 void print_ident(const unsigned char *e)
 {
-	const char *c, *d, *os;
+	const char *c, *d, *os, *vmsg;
 
 	c = (e[EI_CLASS] == ELFCLASS32) ? "ELF32" :
 		(e[EI_CLASS] == ELFCLASS64) ? "ELF64" : "none";
 	d = (e[EI_DATA] == ELFDATA2LSB) ? "2's complement, little endian" :
 		(e[EI_DATA] == ELFDATA2MSB) ? "2's complement, big endian" : "none";
+	vmsg = (e[EI_VERSION] == EV_CURRENT) ? " (current)" : "";
+
+	os = (e[EI_OSABI] == ELFOSABI_SYSV) ? "UNIX - System V" :
+		(e[EI_OSABI] == ELFOSABI_HPUX) ? "UNIX - HP-UX" :
+		(e[EI_OSABI] == ELFOSABI_NETBSD) ? "UNIX - NetBSD" :
+		(e[EI_OSABI] == ELFOSABI_LINUX) ? "UNIX - Linux" :
+		(e[EI_OSABI] == ELFOSABI_SOLARIS) ? "UNIX - Solaris" :
+		(e[EI_OSABI] == ELFOSABI_AIX) ? "UNIX - AIX" :
+		(e[EI_OSABI] == ELFOSABI_IRIX) ? "UNIX - IRIX" :
+		(e[EI_OSABI] == ELFOSABI_FREEBSD) ? "UNIX - FreeBSD" :
+		(e[EI_OSABI] == ELFOSABI_TRU64) ? "UNIX - TRU64" :
+		(e[EI_OSABI] == ELFOSABI_OPENBSD) ? "UNIX - OpenBSD" :
+		(e[EI_OSABI] == ELFOSABI_ARM_AEABI) ? "ARM" :
+		(e[EI_OSABI] == ELFOSABI_ARM) ? "ARM" :
+		(e[EI_OSABI] == ELFOSABI_STANDALONE) ? "Standalone App" : NULL;
 
 	printf("  Class:                             %s\n", c);
 	printf("  Data:                              %s\n", d);
+	printf("  Version:                           %d%s\n", e[EI_VERSION], vmsg);
 
-	printf("  Version:                           ");
-	if (e[EI_VERSION] == EV_CURRENT)
-	{
-		printf("%d (current)\n", e[EI_VERSION]);
-	}
-	else
-	{
-		printf("%d\n", e[EI_VERSION]);
-	}
-
-	os = NULL;
-	if (e[EI_OSABI] == ELFOSABI_SYSV)
-	{
-		os = "UNIX - System V";
-	}
-	else if (e[EI_OSABI] == ELFOSABI_NETBSD)
-	{
-		os = "UNIX - NetBSD";
-	}
-	else if (e[EI_OSABI] == ELFOSABI_LINUX)
-	{
-		os = "UNIX - Linux";
-	}
-	else if (e[EI_OSABI] == ELFOSABI_SOLARIS)
-	{
-		os = "UNIX - Solaris";
-	}
-	else if (e[EI_OSABI] == ELFOSABI_FREEBSD)
-	{
-		os = "UNIX - FreeBSD";
-	}
-	else if (e[EI_OSABI] == ELFOSABI_OPENBSD)
-	{
-		os = "UNIX - OpenBSD";
-	}
-	else if (e[EI_OSABI] == ELFOSABI_ARM ||
-		e[EI_OSABI] == ELFOSABI_ARM_AEABI)
-	{
-		os = "ARM";
-	}
-
-	printf("  OS/ABI:                            ");
 	if (os != NULL)
 	{
-		printf("%s\n", os);
+		printf("  OS/ABI:                            %s\n", os);
 	}
 	else
 	{
-		printf("<unknown: %x>\n", e[EI_OSABI]);
+		printf("  OS/ABI:                            <unknown: %x>\n", e[EI_OSABI]);
 	}
 
 	printf("  ABI Version:                       %d\n", e[EI_ABIVERSION]);
