@@ -1,5 +1,5 @@
-#include "elf.h"
 #include "main.h"
+#include <elf.h>
 
 /**
  * close_fd - closes a file descriptor and exits on failure
@@ -21,7 +21,7 @@ void close_fd(int fd)
  * @fd: file descriptor to close or -1
  * @file: filename to print (or NULL)
  * @msg: message format (use %s if file is not NULL)
- *~~
+ *
  * Return: void
  */
 void error(int fd, const char *file, const char *msg)
@@ -44,53 +44,47 @@ void error(int fd, const char *file, const char *msg)
 }
 
 /**
- * print_elf - prints required ELF header info (readelf -h style)
- * @e: buffer containing ELF header
+ * print_lines - prints ELF header lines (already parsed/normalized)
+ * @e: e_ident
+ * @type: normalized type (host-endian)
+ * @entry: normalized entry (host-endian)
  *
  * Return: void
  */
-void print_elf(const unsigned char *e)
+void print_lines(const unsigned char *e, unsigned int type, unsigned long entry)
 {
-	int i, is_64, is_be;
-	unsigned int type;
-	unsigned long entry;
-	const Elf32_Ehdr *h32;
-	const Elf64_Ehdr *h64;
-	const char *osabi;
-	const char *typestr;
+	int i;
+	const char *osabi, *typestr;
 
-	is_64 = (e[EI_CLASS] == ELFCLASS64);
-	is_be = (e[EI_DATA] == ELFDATA2MSB);
-
-	h32 = (const Elf32_Ehdr *)e;
-	h64 = (const Elf64_Ehdr *)e;
-
-	type = is_64 ? h64->e_type : h32->e_type;
-	entry = is_64 ? (unsigned long)h64->e_entry : (unsigned long)h32->e_entry;
-
-	if (is_be)
+	struct map_s
 	{
-		type = ((type >> 8) | (type << 8)) & 0xFFFF;
+		unsigned int v;
+		const char *s;
+	};
 
-		if (is_64)
-		{
-			entry = ((entry & 0x00000000000000FFUL) << 56) |
-				((entry & 0x000000000000FF00UL) << 40) |
-				((entry & 0x0000000000FF0000UL) << 24) |
-				((entry & 0x00000000FF000000UL) << 8) |
-				((entry & 0x000000FF00000000UL) >> 8) |
-				((entry & 0x0000FF0000000000UL) >> 24) |
-				((entry & 0x00FF000000000000UL) >> 40) |
-				((entry & 0xFF00000000000000UL) >> 56);
-		}
-		else
-		{
-			entry = ((entry & 0x000000FFUL) << 24) |
-				((entry & 0x0000FF00UL) << 8) |
-				((entry & 0x00FF0000UL) >> 8) |
-				((entry & 0xFF000000UL) >> 24);
-		}
-	}
+	const struct map_s os_map[] = {
+		{ELFOSABI_SYSV, "UNIX - System V"},
+		{ELFOSABI_HPUX, "UNIX - HP-UX"},
+		{ELFOSABI_NETBSD, "UNIX - NetBSD"},
+		{ELFOSABI_LINUX, "UNIX - Linux"},
+		{ELFOSABI_SOLARIS, "UNIX - Solaris"},
+		{ELFOSABI_AIX, "UNIX - AIX"},
+		{ELFOSABI_IRIX, "UNIX - IRIX"},
+		{ELFOSABI_FREEBSD, "UNIX - FreeBSD"},
+		{ELFOSABI_TRU64, "UNIX - TRU64"},
+		{ELFOSABI_OPENBSD, "UNIX - OpenBSD"},
+		{ELFOSABI_ARM_AEABI, "ARM"},
+		{ELFOSABI_ARM, "ARM"},
+		{ELFOSABI_STANDALONE, "Standalone App"}
+	};
+
+	const struct map_s t_map[] = {
+		{ET_NONE, "NONE (None)"},
+		{ET_REL, "REL (Relocatable file)"},
+		{ET_EXEC, "EXEC (Executable file)"},
+		{ET_DYN, "DYN (Shared object file)"},
+		{ET_CORE, "CORE (Core file)"}
+	};
 
 	printf("ELF Header:\n");
 
@@ -146,55 +140,13 @@ void print_elf(const unsigned char *e)
 	}
 
 	osabi = NULL;
-	if (e[EI_OSABI] == ELFOSABI_SYSV)
+	for (i = 0; i < (int)(sizeof(os_map) / sizeof(os_map[0])); i++)
 	{
-		osabi = "UNIX - System V";
+		if (os_map[i].v == (unsigned int)e[EI_OSABI])
+		{
+			osabi = os_map[i].s;
+		}
 	}
-	else if (e[EI_OSABI] == ELFOSABI_HPUX)
-	{
-		osabi = "UNIX - HP-UX";
-	}
-	else if (e[EI_OSABI] == ELFOSABI_NETBSD)
-	{
-		osabi = "UNIX - NetBSD";
-	}
-	else if (e[EI_OSABI] == ELFOSABI_LINUX)
-	{
-		osabi = "UNIX - Linux";
-	}
-	else if (e[EI_OSABI] == ELFOSABI_SOLARIS)
-	{
-		osabi = "UNIX - Solaris";
-	}
-	else if (e[EI_OSABI] == ELFOSABI_AIX)
-	{
-		osabi = "UNIX - AIX";
-	}
-	else if (e[EI_OSABI] == ELFOSABI_IRIX)
-	{
-		osabi = "UNIX - IRIX";
-	}
-	else if (e[EI_OSABI] == ELFOSABI_FREEBSD)
-	{
-		osabi = "UNIX - FreeBSD";
-	}
-	else if (e[EI_OSABI] == ELFOSABI_TRU64)
-	{
-		osabi = "UNIX - TRU64";
-	}
-	else if (e[EI_OSABI] == ELFOSABI_OPENBSD)
-	{
-		osabi = "UNIX - OpenBSD";
-	}
-	else if (e[EI_OSABI] == ELFOSABI_ARM_AEABI || e[EI_OSABI] == ELFOSABI_ARM)
-	{
-		osabi = "ARM";
-	}
-	else if (e[EI_OSABI] == ELFOSABI_STANDALONE)
-	{
-		osabi = "Standalone App";
-	}
-
 	printf("  OS/ABI:                            ");
 	if (osabi != NULL)
 	{
@@ -208,27 +160,13 @@ void print_elf(const unsigned char *e)
 	printf("  ABI Version:                       %d\n", e[EI_ABIVERSION]);
 
 	typestr = NULL;
-	if (type == ET_NONE)
+	for (i = 0; i < (int)(sizeof(t_map) / sizeof(t_map[0])); i++)
 	{
-		typestr = "NONE (None)";
+		if (t_map[i].v == type)
+		{
+			typestr = t_map[i].s;
+		}
 	}
-	else if (type == ET_REL)
-	{
-		typestr = "REL (Relocatable file)";
-	}
-	else if (type == ET_EXEC)
-	{
-		typestr = "EXEC (Executable file)";
-	}
-	else if (type == ET_DYN)
-	{
-		typestr = "DYN (Shared object file)";
-	}
-	else if (type == ET_CORE)
-	{
-		typestr = "CORE (Core file)";
-	}
-
 	printf("  Type:                              ");
 	if (typestr != NULL)
 	{
@@ -240,6 +178,56 @@ void print_elf(const unsigned char *e)
 	}
 
 	printf("  Entry point address:               0x%lx\n", entry);
+}
+
+/**
+ * print_elf - parses header fields, normalizes endianness, prints
+ * @e: buffer containing ELF header
+ *
+ * Return: void
+ */
+void print_elf(const unsigned char *e)
+{
+	int is_64, is_be;
+	unsigned int type;
+	unsigned long entry;
+	const Elf32_Ehdr *h32;
+	const Elf64_Ehdr *h64;
+
+	is_64 = (e[EI_CLASS] == ELFCLASS64);
+	is_be = (e[EI_DATA] == ELFDATA2MSB);
+
+	h32 = (const Elf32_Ehdr *)e;
+	h64 = (const Elf64_Ehdr *)e;
+
+	type = is_64 ? (unsigned int)h64->e_type : (unsigned int)h32->e_type;
+	entry = is_64 ? (unsigned long)h64->e_entry : (unsigned long)h32->e_entry;
+
+	if (is_be)
+	{
+		type = ((type & 0x00FF) << 8) | ((type & 0xFF00) >> 8);
+
+		if (is_64)
+		{
+			entry = ((entry & 0x00000000000000FFUL) << 56) |
+				((entry & 0x000000000000FF00UL) << 40) |
+				((entry & 0x0000000000FF0000UL) << 24) |
+				((entry & 0x00000000FF000000UL) << 8) |
+				((entry & 0x000000FF00000000UL) >> 8) |
+				((entry & 0x0000FF0000000000UL) >> 24) |
+				((entry & 0x00FF000000000000UL) >> 40) |
+				((entry & 0xFF00000000000000UL) >> 56);
+		}
+		else
+		{
+			entry = ((entry & 0x000000FFUL) << 24) |
+				((entry & 0x0000FF00UL) << 8) |
+				((entry & 0x00FF0000UL) >> 8) |
+				((entry & 0xFF000000UL) >> 24);
+		}
+	}
+
+	print_lines(e, type, entry);
 }
 
 /**
