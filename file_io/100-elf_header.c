@@ -81,28 +81,7 @@ void print_magic(const unsigned char *e)
  */
 void print_ident(const unsigned char *e)
 {
-	int i;
-	const char *c, *d, *osabi;
-
-	struct map_s
-	{
-		unsigned int v;
-		const char *s;
-	};
-
-	const struct map_s os_map[] = {
-		{ELFOSABI_SYSV, "UNIX - System V"},
-		{ELFOSABI_HPUX, "UNIX - HP-UX"},
-		{ELFOSABI_NETBSD, "UNIX - NetBSD"},
-		{ELFOSABI_LINUX, "UNIX - Linux"},
-		{ELFOSABI_SOLARIS, "UNIX - Solaris"},
-		{ELFOSABI_AIX, "UNIX - AIX"}, {ELFOSABI_IRIX, "UNIX - IRIX"},
-		{ELFOSABI_FREEBSD, "UNIX - FreeBSD"},
-		{ELFOSABI_TRU64, "UNIX - TRU64"},
-		{ELFOSABI_OPENBSD, "UNIX - OpenBSD"},
-		{ELFOSABI_ARM_AEABI, "ARM"}, {ELFOSABI_ARM, "ARM"},
-		{ELFOSABI_STANDALONE, "Standalone App"}
-	};
+	const char *c, *d, *os;
 
 	c = (e[EI_CLASS] == ELFCLASS32) ? "ELF32" :
 		(e[EI_CLASS] == ELFCLASS64) ? "ELF64" : "none";
@@ -122,19 +101,41 @@ void print_ident(const unsigned char *e)
 		printf("%d\n", e[EI_VERSION]);
 	}
 
-	osabi = NULL;
-	for (i = 0; i < (int)(sizeof(os_map) / sizeof(os_map[0])); i++)
+	os = NULL;
+	if (e[EI_OSABI] == ELFOSABI_SYSV)
 	{
-		if (os_map[i].v == (unsigned int)e[EI_OSABI])
-		{
-			osabi = os_map[i].s;
-		}
+		os = "UNIX - System V";
+	}
+	else if (e[EI_OSABI] == ELFOSABI_NETBSD)
+	{
+		os = "UNIX - NetBSD";
+	}
+	else if (e[EI_OSABI] == ELFOSABI_LINUX)
+	{
+		os = "UNIX - Linux";
+	}
+	else if (e[EI_OSABI] == ELFOSABI_SOLARIS)
+	{
+		os = "UNIX - Solaris";
+	}
+	else if (e[EI_OSABI] == ELFOSABI_FREEBSD)
+	{
+		os = "UNIX - FreeBSD";
+	}
+	else if (e[EI_OSABI] == ELFOSABI_OPENBSD)
+	{
+		os = "UNIX - OpenBSD";
+	}
+	else if (e[EI_OSABI] == ELFOSABI_ARM ||
+		e[EI_OSABI] == ELFOSABI_ARM_AEABI)
+	{
+		os = "ARM";
 	}
 
 	printf("  OS/ABI:                            ");
-	if (osabi != NULL)
+	if (os != NULL)
 	{
-		printf("%s\n", osabi);
+		printf("%s\n", os);
 	}
 	else
 	{
@@ -152,26 +153,12 @@ void print_ident(const unsigned char *e)
  */
 void print_type_entry(const unsigned char *e)
 {
-	int i, is_64, is_be;
+	int is_64, is_be;
 	unsigned int type;
 	unsigned long entry;
-	const char *typestr;
+	const char *t;
 	const Elf32_Ehdr *h32;
 	const Elf64_Ehdr *h64;
-
-	struct map_s
-	{
-		unsigned int v;
-		const char *s;
-	};
-
-	const struct map_s t_map[] = {
-		{ET_NONE, "NONE (None)"},
-		{ET_REL, "REL (Relocatable file)"},
-		{ET_EXEC, "EXEC (Executable file)"},
-		{ET_DYN, "DYN (Shared object file)"},
-		{ET_CORE, "CORE (Core file)"}
-	};
 
 	is_64 = (e[EI_CLASS] == ELFCLASS64);
 	is_be = (e[EI_DATA] == ELFDATA2MSB);
@@ -187,19 +174,16 @@ void print_type_entry(const unsigned char *e)
 		entry = is_64 ? SWAP64(entry) : SWAP32(entry);
 	}
 
-	typestr = NULL;
-	for (i = 0; i < (int)(sizeof(t_map) / sizeof(t_map[0])); i++)
-	{
-		if (t_map[i].v == type)
-		{
-			typestr = t_map[i].s;
-		}
-	}
+	t = (type == ET_NONE) ? "NONE (None)" :
+		(type == ET_REL) ? "REL (Relocatable file)" :
+		(type == ET_EXEC) ? "EXEC (Executable file)" :
+		(type == ET_DYN) ? "DYN (Shared object file)" :
+		(type == ET_CORE) ? "CORE (Core file)" : NULL;
 
 	printf("  Type:                              ");
-	if (typestr != NULL)
+	if (t != NULL)
 	{
-		printf("%s\n", typestr);
+		printf("%s\n", t);
 	}
 	else
 	{
