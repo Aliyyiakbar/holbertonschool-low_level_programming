@@ -37,9 +37,12 @@ void error(int fd, const char *file, const char *msg)
 		dprintf(STDERR_FILENO, "%s", msg);
 	}
 
-	if (fd != -1 && close(fd) == -1)
+	if (fd != -1)
 	{
-		dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", fd);
+		if (close(fd) == -1)
+		{
+			dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", fd);
+		}
 	}
 
 	exit(98);
@@ -185,8 +188,7 @@ void print_type_entry(const unsigned char *e)
 	};
 
 	const struct map_s t_map[] = {
-		{ET_NONE, "NONE (None)"},
-		{ET_REL, "REL (Relocatable file)"},
+		{ET_NONE, "NONE (None)"}, {ET_REL, "REL (Relocatable file)"},
 		{ET_EXEC, "EXEC (Executable file)"},
 		{ET_DYN, "DYN (Shared object file)"},
 		{ET_CORE, "CORE (Core file)"}
@@ -270,6 +272,15 @@ int main(int argc, char *argv[])
 		e[EI_MAG2] != ELFMAG2 || e[EI_MAG3] != ELFMAG3)
 	{
 		error(fd, argv[1], "Error: %s is not an ELF file\n");
+	}
+
+	if (e[EI_CLASS] == ELFCLASS32 && r < (ssize_t)sizeof(Elf32_Ehdr))
+	{
+		error(fd, argv[1], "Error: File %s is too short\n");
+	}
+	if (e[EI_CLASS] == ELFCLASS64 && r < (ssize_t)sizeof(Elf64_Ehdr))
+	{
+		error(fd, argv[1], "Error: File %s is too short\n");
 	}
 
 	print_magic(e);
