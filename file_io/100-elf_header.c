@@ -82,7 +82,7 @@ void print_magic(const unsigned char *e)
 void print_ident(const unsigned char *e)
 {
 	int i;
-	const char *osabi;
+	const char *c, *d, *osabi;
 
 	struct map_s
 	{
@@ -96,43 +96,21 @@ void print_ident(const unsigned char *e)
 		{ELFOSABI_NETBSD, "UNIX - NetBSD"},
 		{ELFOSABI_LINUX, "UNIX - Linux"},
 		{ELFOSABI_SOLARIS, "UNIX - Solaris"},
-		{ELFOSABI_AIX, "UNIX - AIX"},
-		{ELFOSABI_IRIX, "UNIX - IRIX"},
+		{ELFOSABI_AIX, "UNIX - AIX"}, {ELFOSABI_IRIX, "UNIX - IRIX"},
 		{ELFOSABI_FREEBSD, "UNIX - FreeBSD"},
 		{ELFOSABI_TRU64, "UNIX - TRU64"},
 		{ELFOSABI_OPENBSD, "UNIX - OpenBSD"},
-		{ELFOSABI_ARM_AEABI, "ARM"},
-		{ELFOSABI_ARM, "ARM"},
+		{ELFOSABI_ARM_AEABI, "ARM"}, {ELFOSABI_ARM, "ARM"},
 		{ELFOSABI_STANDALONE, "Standalone App"}
 	};
 
-	printf("  Class:                             ");
-	if (e[EI_CLASS] == ELFCLASS32)
-	{
-		printf("ELF32\n");
-	}
-	else if (e[EI_CLASS] == ELFCLASS64)
-	{
-		printf("ELF64\n");
-	}
-	else
-	{
-		printf("none\n");
-	}
+	c = (e[EI_CLASS] == ELFCLASS32) ? "ELF32" :
+		(e[EI_CLASS] == ELFCLASS64) ? "ELF64" : "none";
+	d = (e[EI_DATA] == ELFDATA2LSB) ? "2's complement, little endian" :
+		(e[EI_DATA] == ELFDATA2MSB) ? "2's complement, big endian" : "none";
 
-	printf("  Data:                              ");
-	if (e[EI_DATA] == ELFDATA2LSB)
-	{
-		printf("2's complement, little endian\n");
-	}
-	else if (e[EI_DATA] == ELFDATA2MSB)
-	{
-		printf("2's complement, big endian\n");
-	}
-	else
-	{
-		printf("none\n");
-	}
+	printf("  Class:                             %s\n", c);
+	printf("  Data:                              %s\n", d);
 
 	printf("  Version:                           ");
 	if (e[EI_VERSION] == EV_CURRENT)
@@ -188,7 +166,8 @@ void print_type_entry(const unsigned char *e)
 	};
 
 	const struct map_s t_map[] = {
-		{ET_NONE, "NONE (None)"}, {ET_REL, "REL (Relocatable file)"},
+		{ET_NONE, "NONE (None)"},
+		{ET_REL, "REL (Relocatable file)"},
 		{ET_EXEC, "EXEC (Executable file)"},
 		{ET_DYN, "DYN (Shared object file)"},
 		{ET_CORE, "CORE (Core file)"}
@@ -205,14 +184,7 @@ void print_type_entry(const unsigned char *e)
 	if (is_be)
 	{
 		type = SWAP16(type);
-		if (is_64)
-		{
-			entry = SWAP64(entry);
-		}
-		else
-		{
-			entry = SWAP32(entry);
-		}
+		entry = is_64 ? SWAP64(entry) : SWAP32(entry);
 	}
 
 	typestr = NULL;
@@ -274,24 +246,15 @@ int main(int argc, char *argv[])
 		error(fd, argv[1], "Error: %s is not an ELF file\n");
 	}
 
-	if (e[EI_CLASS] == ELFCLASS32 && r < (ssize_t)sizeof(Elf32_Ehdr))
-	{
-		error(fd, argv[1], "Error: File %s is too short\n");
-	}
-	if (e[EI_CLASS] == ELFCLASS64 && r < (ssize_t)sizeof(Elf64_Ehdr))
-	{
-		error(fd, argv[1], "Error: File %s is too short\n");
-	}
-
-	print_magic(e);
-	print_ident(e);
-	print_type_entry(e);
-
 	if (close(fd) == -1)
 	{
 		dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", fd);
 		exit(98);
 	}
+
+	print_magic(e);
+	print_ident(e);
+	print_type_entry(e);
 
 	return (0);
 }
