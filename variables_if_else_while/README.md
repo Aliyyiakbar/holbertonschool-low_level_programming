@@ -68,3 +68,8 @@ Example:
 ```bash
 gcc -Wall -Werror -Wextra -pedantic -std=gnu89 filename.c -o output
 ./output
+```
+
+## Author
+
+Aliyyiakbar Shirinli

@@ -51,3 +51,8 @@ Example:
 
 ```bash
 gcc -Wall -Werror -Wextra -pedantic -std=gnu89 *.c -o prog
+```
+
+## Author
+
+Aliyyiakbar Shirinli

@@ -60,3 +60,8 @@ Example usage (optional, for local testing):
 
 ```bash
 valgrind --leak-check=full ./prog
+```
+
+## Author
+
+Aliyyiakbar Shirinli
