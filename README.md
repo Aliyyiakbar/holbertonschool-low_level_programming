@@ -1,4 +1,4 @@
-# Holberton School Low Level Programming
+# Holberton School - Low Level Programming
 
 This repository contains my C programming work for Holberton School.
 It covers the fundamentals of low-level programming: compilation, control flow,
